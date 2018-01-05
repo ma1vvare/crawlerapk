@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from termcolor import colored
 import urllib
 import urllib2
 import threading,time
@@ -77,27 +78,6 @@ class download_thread(threading.Thread):
         #self.category = category
         self.data = data
 
-    def run(self):
-        #data = self.rawContent.findAll("div",{"class": "image-style-for-related-posts"})# 84 items
-        for content in xrange(0,len(self.data)):
-            for url in self.data[content].findAll("a"):
-                counter = 0
-                try:
-                    fakeURL = url.get('href')
-                    apk_name=url.get('href')[36:][:-1]
-                    #time.sleep(0.1)
-                    #pkg_name = _get_pkg_name(fakeURL)
-                    #print pkg_name
-                    #print fakeURL
-                    dlink = _get_d_link(fakeURL)
-                    print "dlink : ",dlink
-                    print "apk_name : ",apk_name
-                    #_download_apk(dlink,apk_name)
-                    counter
-                except:
-                        traceback.print_exc()
-
-
 def run(rawContent,data):
     #data = self.rawContent.findAll("div",{"class": "image-style-for-related-posts"})# 84 items
     fakeURL_list = []
@@ -110,16 +90,17 @@ def run(rawContent,data):
                 fakeURL_list.append(fakeURL)
                 apk_name=url.get('href')[36:][:-1]
                 #time.sleep(0.1)
-                #print fakeURL
+                print fakeURL
+                print colored("downloading",'red'),apk_name,"..."
                 pkg_name = _get_pkg_name(fakeURL)
                 pkg_name_list.append(pkg_name)
-                print pkg_name
+                #print pkg_name
 
                 dlink = _get_d_link(fakeURL)
                 dlink_list.append(dlink)
-                print "dlink : ",dlink
+                #print "dlink : ",dlink
                 #print "apk_name : ",apk_name
-                _download_apk(dlink,apk_name)
+                #_download_apk(dlink,apk_name)
             except Exception,e:
                 traceback.print_exc()
     print "Size of fakeURL_list",len(fakeURL_list)
@@ -127,19 +108,20 @@ def run(rawContent,data):
     print "Size of dlink_list",len(dlink_list)
 def main():
     category_list = []
+    category_subpage=[]
     for content in range(0,1):
         rawContent = soup.findAll("div",{"class": "col-8 main-content"})[content] #main content
         herf = rawContent.findAll("a",{"class": "taxonomy_button limit-line"}) # size of herf is 14
         for rawCategory in herf:
             try:
                 category_list.append(rawCategory.get('href')[44:][:-1]) # grep category string
+                category_subpage.append(rawCategory.get('href'))
                 #print category
                 #DownloadThread=download_thread(rawContent,category).run()
                 #test(rawContent,category)
             except Exception,e:
                 traceback.print_exc()
                 print "download error"
-
     data = rawContent.findAll("div",{"class": "image-style-for-related-posts"})# 84 items
 
     #download_thread(rawContent,data).run()
